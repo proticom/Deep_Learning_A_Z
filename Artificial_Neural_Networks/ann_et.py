@@ -16,6 +16,10 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from datetime import datetime
+
+# Script Start Time
+startTime = datetime.now()
 
 # Importing the dataset
 dataset = pd.read_csv('Churn_Modelling.csv')
@@ -138,8 +142,8 @@ def build_classifier(optimizer):
     classifier.compile(optimizer = optimizer, loss = 'binary_crossentropy', metrics = ['accuracy'])
     return classifier
 classifier = KerasClassifier(build_fn = build_classifier)
-parameters = {'batch_size': [25, 32],
-              'epochs': [100, 500],
+parameters = {'batch_size': np.arange(10,101,10),
+              'epochs': np.arange(50,101,50),
               'optimizer': ['adam', 'rmsprop']}
 from keras import backend as K
 with K.tf.device('/gpu:0'):
@@ -150,4 +154,12 @@ with K.tf.device('/gpu:0'):
     grid_search = grid_search.fit(X_train, y_train)
 best_parameters = grid_search.best_params_
 best_accuracy = grid_search.best_score_
+
+# Script Start Time
+endTime = datetime.now()
+
+# Get Grid of Parameters and Accuracy
+grid_scores = grid_search.grid_scores_
+cv_results = grid_search.cv_results_
+
 
